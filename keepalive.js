@@ -15,7 +15,7 @@
     window.location.hostname === '127.0.0.1'
   )
     ? 'http://localhost:8080/api/ping'
-    : 'https://YOUR_BACKEND_URL.onrender.com/api/ping';
+    : 'https://wedtask-backend.onrender.com/api/ping';
 
   const PING_INTERVAL_MS = 14 * 60 * 1000; // 14 minutes — just under Render's 15-min limit
   const COLD_START_THRESHOLD_MS = 5000;     // if ping takes >5s, server was sleeping

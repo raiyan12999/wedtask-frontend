@@ -4,7 +4,7 @@
 // For local development it automatically uses localhost:8080.
 const API = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
   ? 'http://localhost:8080/api'
-  : 'https://YOUR_BACKEND_URL.onrender.com/api';
+  : 'https://wedtask-backend.onrender.com/api';
 
 // ── State ──────────────────────────────────────────────────
 let currentUser = null;
