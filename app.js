@@ -8,7 +8,7 @@
 
 const BACKEND_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
   ? 'http://localhost:8080'
-  : 'https://YOUR-ACTUAL-BACKEND.onrender.com'; // ← replace this
+  : 'https://wedtask-backend.onrender.com'; // ← replace this
 
 const API = BACKEND_URL + '/api';
 
