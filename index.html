@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WeddTask – Wedding Task Manager</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+<!-- Loading -->
+<div id="loading-screen">
+  <h1>🌸 WeddTask</h1>
+  <p>Wedding Task Manager</p>
+  <div class="loader-ring"></div>
+</div>
+
+<!-- Header -->
+<header id="app-header" style="display:none">
+  <div class="header-inner">
+    <div class="header-brand">
+      <h1>🌸 WeddTask</h1>
+      <span>Wedding Task Manager</span>
+    </div>
+    <div class="header-user">
+      <div id="header-user-info" class="user-badge">Guest</div>
+      <span id="header-admin-badge" class="admin-badge" style="display:none">Admin</span>
+      <button class="btn-switch" onclick="switchUser()">Switch</button>
+    </div>
+  </div>
+</header>
+
+<!-- Main -->
+<main id="app-main" style="display:none">
+
+  <!-- Entry Screen -->
+  <div id="entry-screen">
+    <div class="entry-card">
+      <div class="big-icon">💍</div>
+      <h2>Welcome</h2>
+      <p>Enter your name to join the wedding coordination</p>
+      <div class="divider"></div>
+      <div class="field">
+        <label>Your Name</label>
+        <input type="text" id="entry-name" placeholder="e.g. Fatima Rahman" autocomplete="off" />
+      </div>
+      <div class="field">
+        <label>Admin Code <span style="color:var(--sage);font-weight:400">(optional)</span></label>
+        <input type="password" id="entry-admin-code" placeholder="Leave blank if not admin" />
+      </div>
+      <button class="btn btn-primary" onclick="handleEntry()">
+        ✨ Enter WeddTask
+      </button>
+      <p style="margin-top:16px;font-size:.78rem;color:var(--sage)">
+        No account needed — just your name
+      </p>
+    </div>
+  </div>
+
+  <!-- App Screen (hidden until entry) -->
+  <div id="app-screen" style="display:none">
+
+    <!-- Status strip (for members only) -->
+    <div id="status-strip" class="status-strip" style="display:none">
+      <div class="status-strip-info">
+        <div id="status-dot" class="status-dot free"></div>
+        <div>
+          <div class="status-label" id="status-label-text">You are FREE</div>
+          <div style="font-size:.78rem;color:var(--sage)">Toggle when you're occupied</div>
+        </div>
+      </div>
+      <div class="toggle-group">
+        <button class="toggle-btn active" id="btn-free" onclick="setMyStatus('FREE')">Free</button>
+        <button class="toggle-btn" id="btn-busy" onclick="setMyStatus('BUSY')">Busy</button>
+      </div>
+    </div>
+
+    <!-- Admin view -->
+    <div id="admin-view" style="display:none">
+      <div class="tabs">
+        <button class="tab-btn active" onclick="showTab('tasks')">📋 Tasks</button>
+        <button class="tab-btn" onclick="showTab('team')">👥 Team</button>
+      </div>
+
+      <!-- Tasks Tab -->
+      <div class="tab-panel active" id="tab-tasks">
+        <!-- Progress -->
+        <div class="progress-card">
+          <div class="progress-header">
+            <h3>✨ Event Progress</h3>
+            <div class="progress-pct" id="progress-pct">0%</div>
+          </div>
+          <div class="progress-bar-track">
+            <div class="progress-bar-fill" id="progress-fill" style="width:0%"></div>
+          </div>
+          <div class="progress-stats">
+            <span>✅ <strong id="stat-done">0</strong> done</span>
+            <span>⏳ <strong id="stat-pending">0</strong> pending</span>
+            <span>📌 <strong id="stat-total">0</strong> total</span>
+          </div>
+        </div>
+
+        <!-- Task sections by time -->
+        <div id="tasks-container">
+          <!-- BEFORE -->
+          <div class="section-header">
+            <div class="section-title">
+              <span class="section-icon">🌅</span>
+              <h2>Before Event</h2>
+            </div>
+            <span class="count-badge" id="count-before">0</span>
+          </div>
+          <div class="tasks-grid" id="tasks-before"></div>
+
+          <!-- DURING -->
+          <div class="section-header">
+            <div class="section-title">
+              <span class="section-icon">💒</span>
+              <h2>During Event</h2>
+            </div>
+            <span class="count-badge" id="count-during">0</span>
+          </div>
+          <div class="tasks-grid" id="tasks-during"></div>
+
+          <!-- AFTER -->
+          <div class="section-header">
+            <div class="section-title">
+              <span class="section-icon">🌙</span>
+              <h2>After Event</h2>
+            </div>
+            <span class="count-badge" id="count-after">0</span>
+          </div>
+          <div class="tasks-grid" id="tasks-after"></div>
+        </div>
+      </div>
+
+      <!-- Team Tab -->
+      <div class="tab-panel" id="tab-team">
+        <div class="users-panel">
+          <div class="users-panel-header">
+            <h3>👥 Team Members</h3>
+            <span class="count-badge" id="users-count">0 members</span>
+          </div>
+          <div class="user-list" id="users-list">
+            <div class="empty-state"><p>No members yet</p></div>
+          </div>
+        </div>
+
+        <!-- Free users quick section -->
+        <div class="section-header">
+          <div class="section-title">
+            <span class="section-icon">🟢</span>
+            <h2>Available Now</h2>
+          </div>
+          <span class="count-badge" id="free-count">0 free</span>
+        </div>
+        <div class="users-panel">
+          <div class="user-list" id="free-users-list">
+            <div class="empty-state"><p>Nobody marked as free yet</p></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Member view -->
+    <div id="member-view" style="display:none">
+      <div class="section-header" style="margin-top:8px">
+        <div class="section-title">
+          <span class="section-icon">📋</span>
+          <h2>My Tasks</h2>
+        </div>
+        <span class="count-badge" id="my-task-count">0</span>
+      </div>
+
+      <!-- BEFORE -->
+      <div class="section-header" style="margin-top:20px">
+        <div class="section-title">
+          <span class="section-icon">🌅</span>
+          <h2>Before Event</h2>
+        </div>
+      </div>
+      <div class="tasks-grid" id="my-tasks-before"></div>
+
+      <!-- DURING -->
+      <div class="section-header">
+        <div class="section-title">
+          <span class="section-icon">💒</span>
+          <h2>During Event</h2>
+        </div>
+      </div>
+      <div class="tasks-grid" id="my-tasks-during"></div>
+
+      <!-- AFTER -->
+      <div class="section-header">
+        <div class="section-title">
+          <span class="section-icon">🌙</span>
+          <h2>After Event</h2>
+        </div>
+      </div>
+      <div class="tasks-grid" id="my-tasks-after"></div>
+    </div>
+
+  </div><!-- /app-screen -->
+</div><!-- /entry-screen wrapper -->
+
+</main>
+
+<!-- FAB (admin only) -->
+<button class="fab" id="fab-create" style="display:none" onclick="openCreateModal()">
+  ＋ New Task
+</button>
+
+<!-- Create/Edit Task Modal -->
+<div class="modal-overlay" id="task-modal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-header">
+      <h2 id="modal-title">Create Task</h2>
+      <button class="modal-close" onclick="closeModal('task-modal')">✕</button>
+    </div>
+    <div class="field">
+      <label>Task Title *</label>
+      <input type="text" id="task-title" placeholder="e.g. Set up flower arrangements" />
+    </div>
+    <div class="field">
+      <label>Description</label>
+      <textarea id="task-desc" placeholder="Additional details..."></textarea>
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label>Time Category *</label>
+        <select id="task-time">
+          <option value="BEFORE">🌅 Before Event</option>
+          <option value="DURING">💒 During Event</option>
+          <option value="AFTER">🌙 After Event</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Scheduled At</label>
+        <input type="datetime-local" id="task-scheduled" />
+      </div>
+    </div>
+    <div class="field">
+      <label>Assign To</label>
+      <input type="text" id="task-assigned" placeholder="Person's name" />
+      <div class="quick-assign" id="quick-assign-free"></div>
+    </div>
+    <div class="checkbox-row">
+      <input type="checkbox" id="task-urgent" />
+      <label for="task-urgent">🔴 Mark as Urgent</label>
+    </div>
+    <button class="btn btn-primary" onclick="submitTask()">Save Task</button>
+    <input type="hidden" id="editing-task-id" />
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast"></div>
+
+<script src="app.js"></script>
+<script src="keepalive.js"></script>
+</body>
+</html>
