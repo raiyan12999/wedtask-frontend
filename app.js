@@ -2,9 +2,27 @@
 // FIX: Replace the string below with your deployed backend URL after deployment.
 // Example: 'https://wedtask-backend.onrender.com/api'
 // For local development it automatically uses localhost:8080.
-const API = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
-  ? 'http://localhost:8080/api'
-  : 'https://wedtask-backend.onrender.com/api';
+// const API = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+//   ? 'http://localhost:8080/api'
+//   : 'https://wedtask-backend.onrender.com/api';
+
+const BACKEND_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+  ? 'http://localhost:8080'
+  : 'https://YOUR-ACTUAL-BACKEND.onrender.com'; // ← replace this
+
+const API = BACKEND_URL + '/api';
+
+async function waitForServer() {
+  while (true) {
+    try {
+      const res = await fetch(BACKEND_URL + '/api/ping');
+      if (res.ok) return; // server is up, proceed
+    } catch (e) {
+      // still sleeping, keep trying
+    }
+    await new Promise(r => setTimeout(r, 3000)); // wait 3s before retry
+  }
+}
 
 // ── State ──────────────────────────────────────────────────
 let currentUser = null;
@@ -147,6 +165,7 @@ function showTab(name) {
 
 // ── Data Fetch ─────────────────────────────────────────────
 async function fetchAll() {
+  await waitForServer();
   try {
     const [tasks, users, progress] = await Promise.all([
       api('GET', '/tasks'),
